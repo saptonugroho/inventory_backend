@@ -11,10 +11,44 @@ export const getTransaksi = async(req, res)=> {
     }
 }
 
+export const gettransaksiin = async(req, res)=> {
+    try {
+        const transaksi = await Transaksi.findAll({
+            where: { type: 'in' },
+            attributes: ['id_barang','nama_barang','jumlah','type','user_update','createdAt'] // Hanya mengambil atribut tertentu
+        });
+
+        if (transaksi) {
+            res.json(transaksi);
+        } else {
+            res.status(404).json({ message: 'transaksi not found' });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+export const gettransaksiout = async(req, res)=> {
+    try {
+        const transaksi = await Transaksi.findAll({
+            where: { type: 'out' },
+            attributes: ['id_barang','nama_barang','jumlah','type','user_update','createdAt'] // Hanya mengambil atribut tertentu
+        });
+
+        if (transaksi) {
+            res.json(transaksi);
+        } else {
+            res.status(404).json({ message: 'transaksi not found' });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
 
 export const addTransaksi = async(req, res)=>{
-    const {nama, alamat, nohp} = req.body;
-   
+    const {id_barang, nama_barang, jumlah, type, user_update} = req.body;
 
     try {
         await Transaksi.create({

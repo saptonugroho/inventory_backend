@@ -5,11 +5,43 @@ import jwt from "jsonwebtoken";
 export const getUsers = async(req, res)=> {
     try {
         const users = await Users.findAll({
-            attributes: ['id','username','image']
+            attributes: ['id','username','fullname']
         });
         res.json(users);
     } catch (error) {
         console.log(error);
+    }
+}
+
+export const getUserbyid = async(req, res)=> {
+    try {
+        const userId = req.params.id; // Mengambil ID dari parameter URL
+        const user = await Users.findOne({
+            where: { id: userId },
+            attributes: ['id', 'username', 'fullname'] // Hanya mengambil atribut tertentu
+        });
+
+        if (user) {
+            res.json(user);
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+export const UpdateUser = async(req, res) =>{
+    try {
+        await Users.update(req.body,{
+            where:{
+                id: req.params.id
+            }
+        });
+        res.status(200).json({msg: "User Updated"});
+    } catch (error) {
+        console.log(error.message);
     }
 }
 
@@ -49,7 +81,7 @@ export const Login = async(req, res) => {
 }
 
 export const Register = async(req, res)=>{
-    const {username, fullname, password, confPassword} = req.body;
+    const {username, fullname, password, confPassword, role} = req.body;
     if(password != confPassword) return res.status(400).json({message: "Password & Confirm password not the same"});
     const user = await Users.findOne({
         where:{
@@ -65,7 +97,7 @@ export const Register = async(req, res)=>{
             username: username,
             fullname: fullname,
             password: hashPassword,
-            role:2
+            role: role
         })
         res.status(201).json({message: "Register success", data: req.body})
     } catch (error) {
@@ -95,3 +127,4 @@ export const Logout = async(req,res) => {
     res.clearCookie('refreshToken');
     return res.sendStatus(200);
 }
+

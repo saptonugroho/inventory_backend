@@ -3,13 +3,33 @@ import Pemasok from "../models/Pemasok.js";
 export const getPemasok = async(req, res)=> {
     try {
         const pemasok = await Pemasok.findAll({
-            attributes: ['nama','alamat','nohp']
+            attributes: ['id','nama','alamat','nohp']
         });
         res.json(pemasok);
     } catch (error) {
         console.log(error);
     }
 }
+
+export const getpemasokbyid = async(req, res)=> {
+    try {
+        const pemasokId = req.params.id; // Mengambil ID dari parameter URL
+        const pemasok = await Pemasok.findOne({
+            where: { id: pemasokId },
+            attributes: ['id', 'nama', 'alamat', 'nohp'] // Hanya mengambil atribut tertentu
+        });
+
+        if (pemasok) {
+            res.json(pemasok);
+        } else {
+            res.status(404).json({ message: 'pemasok not found' });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
 
 
 export const addPemasok = async(req, res)=>{

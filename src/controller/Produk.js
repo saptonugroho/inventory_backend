@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 export const getProduk = async(req, res)=> {
     try {
         const produk = await Produk.findAll({
-            attributes: ['nama_produk','stok']
+            attributes: ['id','nama_produk','stok']
         });
         res.json(produk);
     } catch (error) {
@@ -13,14 +13,33 @@ export const getProduk = async(req, res)=> {
     }
 }
 
+export const getprodukbyid = async(req, res)=> {
+    try {
+        const produkId = req.params.id; // Mengambil ID dari parameter URL
+        const produk = await Produk.findOne({
+            where: { id: produkId },
+            attributes: ['id', 'nama_produk', 'stok'] // Hanya mengambil atribut tertentu
+        });
+
+        if (produk) {
+            res.json(produk);
+        } else {
+            res.status(404).json({ message: 'produk not found' });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
 export const addProduk = async(req, res)=>{
-    const {nama_produk} = req.body;
+    const {nama_produk,stok} = req.body;
    
 
     try {
         await Produk.create({
             nama_produk: nama_produk,
-            stok: 0,
+            stok: stok,
         })
         res.status(201).json({message: "Tambah Produk Berhasil", data: req.body})
     } catch (error) {
